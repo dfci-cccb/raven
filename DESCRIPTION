@@ -1,5 +1,5 @@
 Package: raven
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Date: 2014-10-30
 Title: Maven-like package management
 Authors@R: c(person("Lev Kuznetsov", "Developer", role = c("aut", "cre")))

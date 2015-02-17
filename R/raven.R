@@ -75,13 +75,12 @@ inspect <- function () function (binder, base, debug) {
                                exdir = file.path (local, name, version), tar = 'tar');
                         'ok';
                       },
-                      on.import = function (name, version, base, execution, .scripts, .source) if (!is.null (sources)) tryCatch ({
-                        save <- getwd ();
-                        setwd (base);
-                        for (script in .scripts (sources, list.files (path = sources, pattern = '*\\.R$', recursive = TRUE)))
+                      on.import = function (name, version, base, execution, .scripts, .source) {
+                        for (script in .scripts (sources,
+                                                 list.files (path = file.path (base, sources), pattern = '*\\.R$', recursive = TRUE)))
                           .source (script, execution);
                         'ok';
-                      }, finally = setwd (save)),
+                      },
                       on.test = function (name, version, base, execution, .scripts, .source, info) if (!is.null (tests)) tryCatch ({
                         save <- getwd ();
                         setwd (base);
