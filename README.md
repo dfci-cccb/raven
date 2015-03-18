@@ -1,25 +1,38 @@
 raven
 =====
 
-A very basic approximation of the maven build tool for R. Install via devtools::install_github, but
-please refer to current commit hash as I reserve the right drastically change the API at any point.
+A tool for setting up R environment with particular package versions
 
-Provided raven() function available which given a base directory (defaults to current working
-directory) will inspect the descriptor file named "raven.R" and act according to its instructions
-against the goals specified in the raven command. An example of the descriptor file would look like
-this:
+Install via:
+```R
+install.packages('devtools');
+devtools::install_github('lev-kuznetsov/devtools');
+devtools::install_github('dfci-cccb/raven');
 ```
-project ('foo', # name of the project
-         'first', # version
-         script ( # packaging, this scripts ships with three packaging types, script
-                  # which sources all R sources found under the subfolder provided by
-                  # sources argument, modules which defines submodules, and cran for
-                  # legacy CRAN-like packaging
-                 sources = '.', tests = NULL)) # default values
-dependency ('bar', 'first')
-# See source for other options
+=====
+
+Currently supports most of cran and bioconductor packages, the exported
+```provide``` function accepts package specifications in a named list
+format with package name as the name and version as the value (i.e.
+```provide (NMF = '0.20.5')```). The version may be omitted (i.e
+```provide (NMF = )```) in which case a warning is issued listing all
+available versions and the version eventually used. Fill in the version
+be rid of the warning. The packages will be installed in a structure
+under ```~/.raven``` by default, can be tweaked with the ```local```
+parameter to ```provide``` or setting the ```raven.local``` option
+
+The ```provide``` function sets up the library paths and if the
+optional ```code``` parameter is supplied will resturn the result of
+its evaluation, if not will invisibly return the library paths. The
+call itself does not alter library paths directly, so if you would
+like to set up package versions for the console a useful idiom is
+to set library paths to the result of ```provide``` call:
+
 ```
-Invoke raven by calling the raven() with as many goals as you wish. A goal is an injectable
-function, raven ships with the following goals: inspect(), fetch(force = FALSE), import(environment),
-test(environment), install(), clean(). Invoking raven without any goals will execute all of the
-above goals in that order except clean. See source for injectables
+.libPaths (raven::provide (jsonlite = '0.9.14'));
+```
+
+To submit your own package for the repository add a push webhook to
+```http://raven-repository.appspot.com/registry/github``` to your
+githubrepository. The package must have a DESCRIPTION file and its
+dependencies must be resolvable at the time of the snapshot

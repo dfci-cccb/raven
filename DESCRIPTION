@@ -1,13 +1,13 @@
 Package: raven
-Version: 0.0.0.9004
-Date: 2014-10-30
-Title: Maven-like package management
-Authors@R: c(person("Lev Kuznetsov", "Developer", role = c("aut", "cre")))
+Version: 0.0.0.9007
+Date: 2015-03-06
+Title: R versioned package manager
 Author: Lev Kuznetsov
 Maintainer: Lev Kuznetsov <levk@jimmy.harvard.edu>
-Imports: base
-Suggests: 
-Description: Maven-like package management
+Depends: R (>= 3.1.0)
+Imports: jsonlite, devtools
+Suggests: testthat
+Description: R versioned package manager
 License: LGPL (>= 3)
 URL: https://github.com/dfci-cccb/raven
 BugReports: https://github.com/dfci-cccb/raven/issues
