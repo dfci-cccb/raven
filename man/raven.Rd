@@ -4,9 +4,9 @@
 \name{raven}
 \alias{raven}
 \alias{raven-package}
-\title{Dependency injection framework}
+\title{R versioned package environment support}
 \description{
-Dependency injection framework
+R versioned package environment support
 }
 \author{
 levk
