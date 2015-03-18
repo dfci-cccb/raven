@@ -19,6 +19,7 @@
 #' @importFrom devtools install_version
 #' @importFrom devtools install_svn
 #' @importFrom devtools install_github
+#' @importFrom devtools with_libpaths
 #' @author levk
 #' @docType package
 #' @name raven
@@ -53,44 +54,44 @@ NULL;
 #' provide (NMF =, code = print (.libPaths ());
 provide <- function (..., code = invisible (.libPaths ()), local = getOption ('raven.local'), repo = getOption ('raven.repo')) {
   packages <- match.call (expand.dots = FALSE)$...;
-  with_libpaths (unique (unlist (sapply (names (packages),
-                                 function (name) (
-                                   install <- function (name, version) {
-                                     if (version == '')
-                                       tryCatch ({
+  devtools::with_libpaths (unique (unlist (sapply (names (packages),
+                                           function (name) (
+                                             install <- function (name, version) {
+                                               if (version == '')
+                                                 tryCatch ({
                                                    versions <- jsonlite::fromJSON (paste (repo, 'repository', name, sep = '/'));
                                                    version <- versions[ 1 ];
                                                    warning (paste ("No version specified for", name, "using",
                                                                    version, "from available", paste (versions, collapse = ', ')),
                                                             call. = FALSE);
                                                  }, error = function (e) stop (paste ("Could not obtain version information for", name, e)));
-                                     tryCatch (info <- jsonlite::fromJSON (paste (repo, 'repository', name, version, sep = '/')),
-                                               error = function (e) stop (paste ("Unable to resolve", paste (name, version, sep = ':'), e)));
-                                     deps <- c (list (), info$depends, info$imports, info$linksTo);
-                                     path <- file.path (local, 'repository', name, version, paste ('.r', eval (expression (version$`svn rev`),
-                                                                                                   baseenv ()), sep = ''));
-                                     installed <- file.exists (path);
-                                     if (!installed) dir.create (path, recursive = TRUE);
-                                     paths <- c (path, if (length (deps) > 0) unlist (lapply (1:length (deps),
-                                                                                      function (i) install (names (deps)[ i ], deps[[ i ]])))
-                                                       else NULL);
-                                     tryCatch (with_libpaths (paths,
-                                                              {
-                                                                if (!installed)
-                                                                  switch (info$`@c`,
-                                                                          .Cran = devtools::install_version (package = name, version = version),
-                                                                          .Svn = devtools::install_svn (url = info$url, subdir = info$dir,
-                                                                                                        branch = info$branch, revision = info$revision,
-                                                                                                        args = if (is.null (info$user)) ''
-                                                                                                               else paste ('--username', info$user,
-                                                                                                                           '--password', info$pw)),
-                                                                          .Github = devtools::install_github (repository = info$repo,
+                                               tryCatch (info <- jsonlite::fromJSON (paste (repo, 'repository', name, version, sep = '/')),
+                                                         error = function (e) stop (paste ("Unable to resolve", paste (name, version, sep = ':'), e)));
+                                               deps <- c (list (), info$depends, info$imports, info$linksTo);
+                                               path <- file.path (local, 'repository', name, version, paste ('.r', eval (expression (version$`svn rev`),
+                                                                                                             baseenv ()), sep = ''));
+                                               installed <- file.exists (path);
+                                               if (!installed) dir.create (path, recursive = TRUE);
+                                               paths <- c (path, if (length (deps) > 0) unlist (lapply (1:length (deps),
+                                                                                                        function (i)
+                                                                                                          install (names (deps)[ i ], deps[[ i ]])))
+                                                                 else NULL);
+                                               devtools::with_libpaths (paths,
+                                                                        tryCatch ({
+                                                                          if (!installed)
+                                                                            switch (info$`@c`,
+                                                                                    .Cran = devtools::install_version (package = name, version = version),
+                                                                                    .Svn = devtools::install_svn (url = info$url, subdir = info$dir,
+                                                                                                                  branch = info$branch, revision = info$revision,
+                                                                                                                  args = if (is.null (info$user)) ''
+                                                                                                                         else paste ('--username', info$user,
+                                                                                                                                     '--password', info$pw)),
+                                                                                    .Github = devtools::install_github (repository = info$repo,
                                                                                                               ref = info$sha));
-                                                                paths;
-                                                              }),
-                                               error = function (e) {
-                                                 unlink (path, recursive = TRUE);
-                                                 stop (e);
-                                               });
+                                                                          paths;
+                                                                        }, error = function (e) {
+                                                                          unlink (path, recursive = TRUE);
+                                                                          stop (e);
+                                                                        }));
                                    }) (name, packages[[ name ]])))), force (code));
 };

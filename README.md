@@ -22,7 +22,7 @@ under ```~/.raven``` by default, can be tweaked with the ```local```
 parameter to ```provide``` or setting the ```raven.local``` option
 
 The ```provide``` function sets up the library paths and if the
-optional ```code``` parameter is supplied will resturn the result of
+optional ```code``` parameter, if supplied, will return the result of
 its evaluation, if not will invisibly return the library paths. The
 call itself does not alter library paths directly, so if you would
 like to set up package versions for the console a useful idiom is
