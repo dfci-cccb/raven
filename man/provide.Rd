@@ -30,8 +30,4 @@ return of the code evaluated within the environment
 Provides the environment with library versions specified and runs the
 code in that environment
 }
-\examples{
-provide (NMF = '0.20.5', code = print (.libPaths ()));
-provide (NMF =, code = print (.libPaths ());
-}
 
